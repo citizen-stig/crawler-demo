@@ -5,9 +5,11 @@ name = "pypi"
 
 [packages]
 requests = "==2.25.1"
+beautifulsoup4 = "*"
 
 [dev-packages]
 pytest = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.9"
