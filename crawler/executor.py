@@ -1,6 +1,6 @@
 import logging
 import os
-from collections import Set
+from typing import Set
 from urllib.parse import urlparse
 import threading
 

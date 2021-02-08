@@ -1,5 +1,3 @@
-import pytest
-
 from crawler.executor import Crawler
 
 

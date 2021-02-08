@@ -1,14 +1,13 @@
-# import re
 from typing import Set
 
 from bs4 import BeautifulSoup
-
-# url_regex = re.compile('(?:https?://)?(?:[\w]+\.)(?:\.?[\w]{2,})+')
 
 
 def extract_links(page: str) -> Set[str]:
     """Returns all http links from data
 
+    Note: only links inside <a> tag is found.
+    Plain text links are not searched
     Relative links as well
     """
     soup = BeautifulSoup(page, 'html.parser')
