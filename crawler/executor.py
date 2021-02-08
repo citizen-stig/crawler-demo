@@ -21,6 +21,7 @@ class Crawler:
         self._to_visit = {start_url}
 
     def run(self):
+        """Start crawler"""
         logger.info("Starting crawler")
         while self._to_visit:
             self._run()
@@ -30,9 +31,13 @@ class Crawler:
         response = requests.get(link)
         self._visited_urls.add(link)
         if response.status_code == 200:
-            page = response.content.decode('utf-8')
-            self._lookup_links(page)
-            self._store_data(link, page)
+            content = response.content
+            try:
+                page = content.decode('utf-8')
+                self._lookup_links(page)
+            except UnicodeDecodeError:
+                logger.debug('Cannot decode response from %s', link)
+            self._store_data(link, content)
         else:
             logger.error('Response code from url %s is: %s',
                          link, response.status_code)
@@ -56,7 +61,7 @@ class Crawler:
             logger.debug("New link to visit: %s", link)
             self._to_visit.add(link)
 
-    def _store_data(self, link: str, page_data: str):
+    def _store_data(self, link: str, page_data: bytes):
         """Dumps data to appropriate path in output directory"""
         logger.debug('this is link: "%s"', link)
         parsed_url = urlparse(link)
@@ -69,5 +74,5 @@ class Crawler:
                     len(page_data),
                     full_path)
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, 'w') as out_file:
+        with open(full_path, 'wb') as out_file:
             out_file.write(page_data)
