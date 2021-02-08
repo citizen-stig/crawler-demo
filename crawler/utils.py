@@ -1,3 +1,6 @@
+"""
+Collection of utils functions for easier tesing
+"""
 from typing import Set
 
 from bs4 import BeautifulSoup

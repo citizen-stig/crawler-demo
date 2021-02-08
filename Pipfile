@@ -11,6 +11,8 @@ beautifulsoup4 = "*"
 pytest = "*"
 pytest-mock = "*"
 mypy = "*"
+pylint = "*"
+pycodestyle = "*"
 
 [requires]
 python_version = "3.9"

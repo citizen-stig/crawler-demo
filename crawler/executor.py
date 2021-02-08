@@ -1,3 +1,6 @@
+"""
+Module that hold main logic
+"""
 import logging
 import os
 from typing import Set
@@ -40,6 +43,10 @@ class Crawler:
             except KeyboardInterrupt:
                 self._stop = True
                 logger.info('Stopping...')
+
+    def get_visited_links_count(self) -> int:
+        """How many links have been visited so far"""
+        return len(self._visited_urls)
 
     def _run(self):
         while self._to_visit and not self._stop:
@@ -90,7 +97,7 @@ class Crawler:
         else:
             sub_path = parsed_url.path[1:]
         full_path = os.path.join(self.out_dir, sub_path)
-        logger.info("Going to save %s symbols to %s",
+        logger.info("Going to save %s bytes to %s",
                     len(page_data),
                     full_path)
         self._make_dirs(os.path.dirname(full_path))
@@ -110,5 +117,5 @@ class Crawler:
                 os.makedirs(dir_name, exist_ok=True)
                 os.rename(tmp_name,
                           os.path.join(current_dir_name, 'index.html'))
-            current_dir_name, rest = os.path.split(current_dir_name)
+            current_dir_name, _ = os.path.split(current_dir_name)
         os.makedirs(dir_name, exist_ok=True)
