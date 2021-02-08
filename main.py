@@ -8,6 +8,7 @@ def main():
     logging.basicConfig(
         format='%(asctime)s - %(levelname)s: %(message)s',
         level=logging.DEBUG)
+    logging.getLogger("requests").setLevel(logging.WARNING)
     parser = argparse.ArgumentParser(
         description='Crawler that dumps website data into provided directory.')
     parser.add_argument('start_url',

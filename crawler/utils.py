@@ -15,6 +15,8 @@ def extract_links(page: str) -> Set[str]:
 
     urls = set()
     for link in soup.find_all('a'):
-        urls.add(link.get('href'))
+        href = link.get('href')
+        if href:
+            urls.add(href)
 
     return urls
