@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import Set
 from urllib.parse import urlparse
 import threading
 
@@ -19,7 +20,7 @@ class Crawler:
             start_url = 'http://' + start_url
         self.start_url = urlparse(start_url)
         self.out_dir = out_dir
-        self._visited_urls = set()
+        self._visited_urls: Set[str] = set()
         self._to_visit = {start_url}
         self._stop = False
 
@@ -68,7 +69,10 @@ class Crawler:
         links = utils.extract_links(page)
         for link in links:
             if link.startswith('/'):
-                link = self.start_url.scheme + "://" + self.start_url.netloc + link
+                link = self.start_url.scheme \
+                       + "://" \
+                       + self.start_url.netloc \
+                       + link
             parsed_link = urlparse(link)
             if parsed_link.netloc != self.start_url.netloc:
                 continue
