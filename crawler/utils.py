@@ -7,6 +7,10 @@ from bs4 import BeautifulSoup
 
 
 def extract_links(page: str) -> Set[str]:
+    """Returns all http links from data
+
+    Relative links as well
+    """
     soup = BeautifulSoup(page, 'html.parser')
 
     urls = set()

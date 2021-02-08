@@ -5,9 +5,6 @@ from pytest_mock import MockerFixture
 from crawler.executor import Crawler
 
 
-# def check_new_urls_added
-
-
 def check_lookup(mocker: MockerFixture,
                  start_url: str,
                  extracted: Set[str],

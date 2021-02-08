@@ -10,5 +10,3 @@ def test_created_successfully():
 
     Crawler('https://project-plato.com/some-path', '/tmp/project-plato')
     Crawler('project-plato.com/some-path', '/tmp/project-plato')
-
-
