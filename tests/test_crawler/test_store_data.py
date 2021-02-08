@@ -13,12 +13,16 @@ def test_store_data(mocker: MockerFixture):
     os_mock = mocker.patch('crawler.executor.os')
     os_mock.path.join.return_value = full_path = '/tmp/mock-dir/full-path'
     os_mock.path.dirname.return_value = dir_name = '/tmp/mock-dir'
+    os_mock.path.split.return_value = ('', 'mock-dir')
+    os_mock.path.isfile.return_value = False
+    os_mock.path.isdir.return_value = False
 
     m = mock.mock_open()
     with mock.patch('crawler.executor.open', m):
         crawler._store_data(link, data)
 
-    os_mock.path.join.assert_called_once_with('/tmp/abc', 'path/to/something')
+    assert os_mock.path.join.call_count == 1
+    os_mock.path.join.assert_called_with('/tmp/abc', 'path/to/something')
     os_mock.makedirs.assert_called_once_with(dir_name, exist_ok=True)
 
     m.assert_called_once_with(full_path, 'wb')

@@ -21,13 +21,11 @@ class Crawler:
         self.out_dir = out_dir
         self._visited_urls = set()
         self._to_visit = {start_url}
+        self._stop = False
 
     def run(self):
         """Start crawler"""
         logger.info("Starting crawler")
-
-        # while self._to_visit:
-        #     self._run()
 
         threads = []
         for _ in range(self.thread_count):
@@ -36,10 +34,14 @@ class Crawler:
             threads.append(thread)
 
         for thread in threads:
-            thread.join()
+            try:
+                thread.join()
+            except KeyboardInterrupt:
+                self._stop = True
+                logger.info('Stopping...')
 
     def _run(self):
-        while self._to_visit:
+        while self._to_visit and not self._stop:
             link = self._to_visit.pop()
             logger.debug("Going to request: %s", link)
             if link is None:
@@ -104,6 +106,5 @@ class Crawler:
                 os.makedirs(dir_name, exist_ok=True)
                 os.rename(tmp_name,
                           os.path.join(current_dir_name, 'index.html'))
-                os.makedirs(dir_name, exist_ok=True)
             current_dir_name, rest = os.path.split(current_dir_name)
         os.makedirs(dir_name, exist_ok=True)
