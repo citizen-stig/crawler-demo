@@ -26,9 +26,13 @@ class Crawler:
         self._visited_urls: Set[str] = set()
         self._to_visit = {start_url}
         self._stop = False
+        self._fs_lock = threading.Lock()
 
     def run(self):
-        """Start crawler"""
+        """Main entry point for running crawler
+
+        Handles threads and SIGINT.
+        """
         logger.info("Starting crawler")
 
         threads = []
@@ -49,6 +53,10 @@ class Crawler:
         return len(self._visited_urls)
 
     def _run(self):
+        """Single thread worker of crawler
+
+        Shares progress via object attribute `_to_visit`
+        """
         while self._to_visit and not self._stop:
             link = self._to_visit.pop()
             logger.debug("Going to request: %s", link)
@@ -69,7 +77,7 @@ class Crawler:
                              link, response.status_code)
                 logger.error('Data: %s', response.content)
 
-    def _lookup_links(self, page):
+    def _lookup_links(self, page: str):
         """Extracts all URLs from the page.
 
         Checks if they should be visited and updates self._to_visit"""
@@ -100,22 +108,30 @@ class Crawler:
         logger.info("Going to save %s bytes to %s",
                     len(page_data),
                     full_path)
+
         self._make_dirs(os.path.dirname(full_path))
         if os.path.isdir(full_path):
             full_path = os.path.join(full_path, 'index.html')
+
         with open(full_path, 'wb') as out_file:
             out_file.write(page_data)
 
-    @staticmethod
-    def _make_dirs(dir_name):
+    def _make_dirs(self, dir_name: str):
+        """Creates all directories in given path
+
+        If some of the nodes in path is actually a file,
+        moves it to ./index.html
+        """
         current_dir_name = dir_name
         while current_dir_name:
-            if os.path.isfile(current_dir_name):
-                logger.info('path %s is file, renaming...', current_dir_name)
-                tmp_name = current_dir_name + '.tmp'
-                os.rename(current_dir_name, tmp_name)
-                os.makedirs(dir_name, exist_ok=True)
-                os.rename(tmp_name,
-                          os.path.join(current_dir_name, 'index.html'))
+            with self._fs_lock:
+                if os.path.isfile(current_dir_name):
+                    logger.info('path %s is file, renaming...',
+                                current_dir_name)
+                    tmp_name = current_dir_name + '.tmp'
+                    os.rename(current_dir_name, tmp_name)
+                    os.makedirs(dir_name, exist_ok=True)
+                    os.rename(tmp_name,
+                              os.path.join(current_dir_name, 'index.html'))
             current_dir_name, _ = os.path.split(current_dir_name)
         os.makedirs(dir_name, exist_ok=True)

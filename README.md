@@ -21,7 +21,7 @@ pipenv run python main.py https://project-plato.com/ output
 - crawler should supports continue to load if destination directory already has loaded data (if we cancel download and than continue)
 
 
-✳️ - Not entirely parallel since python GIL, but I/O operations are made in parallel.
+✳️ - Not entirely parallel since python GIL, but I/O operations are made in parallel. Also design is not ideal, separating fetching and storing threads can gain more performance
 
 
 ## Development
